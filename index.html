@@ -1,1 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ordering Page</title>
+<style>
+  :root{
+    --bg:#FAF7F1;
+    --ink:#1E2A26;
+    --teal:#2F6E5B;
+    --ochre:#C77B2E;
+    --line:#DCD5C6;
+    --card:#FFFFFF;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#171F1C; --ink:#F2EFE7; --card:#20302B; --line:#3A463F;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#171F1C; --ink:#F2EFE7; --card:#20302B; --line:#3A463F;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+       min-height:100%;}
+  .wrap{max-width:640px;margin:0 auto;padding:28px 20px 60px;}
+  .logo-slot{width:180px;height:100px;margin:0 auto 8px;border:1.5px dashed var(--line);
+       border-radius:8px;display:flex;align-items:center;justify-content:center;
+       font-size:12px;color:#9A9280;letter-spacing:.02em;text-align:center;padding:8px;}
+  h1{font-size:26px;font-weight:650;text-align:center;margin:4px 0 2px;letter-spacing:-0.01em;}
+  .sub{text-align:center;color:var(--teal);font-size:13px;margin:0 0 28px;}
+  label{display:block;font-size:13px;color:var(--teal);margin-bottom:6px;font-weight:600;}
+  input[type=text], input[type=email]{
+    width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;
+    background:var(--card);color:var(--ink);font-size:15px;
+  }
+  .field{margin-bottom:20px;}
+  table{width:100%;border-collapse:collapse;margin-top:6px;}
+  thead th{font-size:12px;color:var(--teal);text-align:left;font-weight:600;
+       padding:0 6px 8px;border-bottom:1px solid var(--line);}
+  th.num, td.num{text-align:right;}
+  tbody td{padding:12px 6px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle;}
+  .prod{display:flex;align-items:center;gap:10px;}
+  .thumb{width:38px;height:38px;border-radius:7px;border:1px dashed var(--line);
+     display:flex;align-items:center;justify-content:center;font-size:9px;color:#9A9280;
+     flex-shrink:0;text-align:center;line-height:1.1;}
+  .prod-name{font-size:14px;font-weight:500;}
+  .qty{width:64px;padding:8px 6px;border:1px solid var(--line);border-radius:6px;
+     text-align:center;background:var(--card);color:var(--ink);font-size:14px;}
+  .price-note{font-size:11px;color:#8A8272;margin-top:2px;}
+  .gst-row{display:flex;align-items:center;gap:10px;margin:24px 0 4px;}
+  .gst-row label{margin:0;white-space:nowrap;}
+  .gst-row input{width:70px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;
+     background:var(--card);color:var(--ink);font-size:14px;text-align:right;}
+  .totals{margin-top:18px;border-top:1px solid var(--line);padding-top:14px;}
+  .totals .row{display:flex;justify-content:space-between;font-size:14px;padding:4px 2px;}
+  .totals .row.grand{font-size:18px;font-weight:700;color:var(--teal);border-top:1px solid var(--line);
+     margin-top:8px;padding-top:10px;}
+  .submit{margin-top:26px;width:100%;padding:15px;border:none;border-radius:9px;
+     background:var(--ochre);color:#fff;font-size:15px;font-weight:650;cursor:pointer;
+     letter-spacing:.01em;}
+  .submit:active{opacity:.85;}
+  .foot-note{font-size:11.5px;color:#9A9280;text-align:center;margin-top:14px;line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="wrap">
 
+  <div class="logo-slot" id="logoSlot">logo.png<br>goes here</div>
+  <h1>Ordering Page</h1>
+  <p class="sub">Stickers &middot; wholesale from 100 units</p>
+
+  <div class="field">
+    <label for="clientName">Client name</label>
+    <input type="text" id="clientName" placeholder="Enter client name">
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>Product</th><th class="num">Unit price</th><th class="num">Qty</th><th class="num">Line total</th></tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+
+  <div class="gst-row">
+    <label for="gstRate">GST rate (%)</label>
+    <input type="text" id="gstRate" value="16">
+  </div>
+
+  <div class="totals">
+    <div class="row"><span>Subtotal (excl. GST)</span><span id="subtotal">$0.00</span></div>
+    <div class="row"><span>GST</span><span id="gstAmt">$0.00</span></div>
+    <div class="row grand"><span>Total (incl. GST)</span><span id="grandTotal">$0.00</span></div>
+  </div>
+
+  <button class="submit" id="sendBtn">Send order to tapuwaenz@gmail.com</button>
+  <p class="foot-note">Wholesale price $2.75/unit applies per sticker design once its quantity reaches 100. Standard price $3.00/unit excl. GST below that.</p>
+</div>
+
+<script>
+// ===================================================================
+// EDIT HERE to rename products or change images/prices — one line each.
+// "id" and "image" should stay in sync (image = matching PNG filename).
+// ===================================================================
+const PRODUCTS = [
+  { id: 'Wild Kiwi', name: 'Wild Kiwi', image: '03.png', price: 3.00, wholesalePrice: 2.75, wholesaleAt: 100 },
+  { id: 'Kiwi', name: 'Kiwi', image: '02.png', price: 3.00, wholesalePrice: 2.75, wholesaleAt: 100 },
+  { id: 'KAEA', name: 'KAEA', image: '01.png', price: 3.00, wholesalePrice: 2.75, wholesaleAt: 100 },
+  { id: 'sticker4', name: 'Sticker 4', image: 'sticker4.png', price: 3.00, wholesalePrice: 2.75, wholesaleAt: 100 },
+  { id: 'sticker5', name: 'Sticker 5', image: 'sticker5.png', price: 3.00, wholesalePrice: 2.75, wholesaleAt: 100 },
+];
+// ===================================================================
+
+const rowsEl = document.getElementById('rows');
+PRODUCTS.forEach(p => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>
+      <div class="prod">
+        <div class="thumb">${p.image}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="prod-name">${p.name}</div>
+          <div class="price-note">100+ units: $${p.wholesalePrice.toFixed(2)}</div>
+        </div>
+      </div>
+    </td>
+    <td class="num">$${p.price.toFixed(2)}</td>
+    <td class="num"><input type="text" inputmode="numeric" class="qty" data-id="${p.id}" value="0"></td>
+    <td class="num" id="line-${p.id}">$0.00</td>
+  `;
+  rowsEl.appendChild(tr);
+});
+
+function num(v){ const n = parseFloat(String(v).replace(',', '.')); return isNaN(n) || n < 0 ? 0 : n; }
+
+function recalc(){
+  let subtotal = 0;
+  const lines = [];
+  PRODUCTS.forEach(p => {
+    const input = document.querySelector(`.qty[data-id="${p.id}"]`);
+    const name = p.name;
+    const qty = Math.round(num(input.value));
+    const unitPrice = qty >= p.wholesaleAt ? p.wholesalePrice : p.price;
+    const lineTotal = qty * unitPrice;
+    subtotal += lineTotal;
+    document.getElementById('line-'+p.id).textContent = '$' + lineTotal.toFixed(2);
+    if (qty > 0) lines.push({ name, qty, unitPrice, lineTotal });
+  });
+  const gstRate = num(document.getElementById('gstRate').value);
+  const gstAmt = subtotal * (gstRate / 100);
+  const total = subtotal + gstAmt;
+  document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
+  document.getElementById('gstAmt').textContent = '$' + gstAmt.toFixed(2);
+  document.getElementById('grandTotal').textContent = '$' + total.toFixed(2);
+  return { lines, subtotal, gstRate, gstAmt, total };
+}
+
+document.getElementById('rows').addEventListener('input', recalc);
+document.getElementById('rows').addEventListener('change', recalc);
+document.getElementById('gstRate').addEventListener('input', recalc);
+
+document.getElementById('sendBtn').addEventListener('click', () => {
+  const data = recalc();
+  const clientName = document.getElementById('clientName').value.trim() || '(not provided)';
+  if (data.lines.length === 0){
+    alert('Add a quantity for at least one sticker before sending the order.');
+    return;
+  }
+  let body = `Client name: ${clientName}\n\nOrder:\n`;
+  data.lines.forEach(l => {
+    body += `- ${l.name}: ${l.qty} x $${l.unitPrice.toFixed(2)} = $${l.lineTotal.toFixed(2)}\n`;
+  });
+  body += `\nSubtotal (excl. GST): $${data.subtotal.toFixed(2)}`;
+  body += `\nGST (${data.gstRate}%): $${data.gstAmt.toFixed(2)}`;
+  body += `\nTotal (incl. GST): $${data.total.toFixed(2)}`;
+
+  const subject = encodeURIComponent(`Sticker order - ${clientName}`);
+  const encodedBody = encodeURIComponent(body);
+  window.location.href = `mailto:tapuwaenz@gmail.com?subject=${subject}&body=${encodedBody}`;
+});
+
+recalc();
+</script>
+</body>
+</html>
